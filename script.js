@@ -37,19 +37,21 @@ function initSnake(color) {
         ...initHeadAndBody(),
         direction: initDirection(),
         score: 0,
+        lives: 3,
+        level: 1
     }
 }
 let snake1 = initSnake("purple");
 
 // Soal no 4: make apples array
 let apples = [{
-        color: "red",
-        position: initPosition(),
-    },
-    {
-        color: "green",
-        position: initPosition(),
-    }
+    color: "red",
+    position: initPosition(),
+},
+{
+    color: "green",
+    position: initPosition(),
+}
 ]
 
 function drawCell(ctx, x, y, color) {
@@ -57,22 +59,44 @@ function drawCell(ctx, x, y, color) {
     ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 }
 
+function gameOver(ctx, snake) {
+    ctx.fillText("Game Over", CANVAS_SIZE / 2, CANVAS_SIZE / 2);
+}
+
+function drawLives(ctx, snake) {
+    ctx.fillText(`${snake.lives}`, 40, 5);
+    let img = document.getElementById("lives");
+    ctx.drawImage(img, 0, 0, 30, 30);
+}
+
+function drawLevel(ctx, snake) {
+    console.log(ctx);
+    ctx.fillText(`Level - ${snake.level}`, 440, 40);
+}
+
 // Soal no 6: Pada fungsi drawScore, tambahkan score3Board:
 function drawScore(snake) {
-    let scoreCanvas;
+    let canvas;
     if (snake.color == snake1.color) {
-        scoreCanvas = document.getElementById("score1Board");
+        canvas = document.getElementById("score1Board");
     }
-    let scoreCtx = scoreCanvas.getContext("2d");
+    let ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-    scoreCtx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-    scoreCtx.font = "30px Arial";
-    scoreCtx.fillStyle = snake.color
-    scoreCtx.fillText(snake.score, 10, scoreCanvas.scrollHeight / 2);
+    ctx.font = "bold 30px Poppins";
+    ctx.fillStyle = "Black";
+    ctx.textBaseline = "top";
+
+    let img = document.getElementById("apple");
+    ctx.drawImage(img, 0, 35, 30, 30);
+    ctx.fillText(`${snake.score}`, 40, 40);
+
+    drawLives(ctx, snake);
+    drawLevel(ctx, snake)
 }
 
 function draw() {
-    setInterval(function() {
+    setInterval(function () {
         let snakeCanvas = document.getElementById("snakeBoard");
         let ctx = snakeCanvas.getContext("2d");
 
@@ -186,7 +210,7 @@ function move(snake) {
     }
     moveBody(snake);
     if (!checkCollision([snake1])) {
-        setTimeout(function() {
+        setTimeout(function () {
             move(snake);
         }, MOVE_INTERVAL);
     } else {
@@ -212,7 +236,7 @@ function turn(snake, direction) {
     }
 }
 
-document.addEventListener("keydown", function(event) {
+document.addEventListener("keydown", function (event) {
     if (event.key === "ArrowLeft") {
         turn(snake1, DIRECTION.LEFT);
     } else if (event.key === "ArrowRight") {
