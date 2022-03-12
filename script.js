@@ -59,8 +59,12 @@ function drawCell(ctx, x, y, color) {
     ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 }
 
-function gameOver(ctx, snake) {
-    ctx.fillText("Game Over", CANVAS_SIZE / 2, CANVAS_SIZE / 2);
+function gameOver(ctx) {
+    ctx.font = "bold 30px Poppins";
+    ctx.fillStyle = "Black";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("Yah kalah, Semangat!! ", CANVAS_SIZE / 2, CANVAS_SIZE / 2);
 }
 
 function drawLives(ctx, snake) {
@@ -69,9 +73,21 @@ function drawLives(ctx, snake) {
     ctx.drawImage(img, 0, 0, 30, 30);
 }
 
+function updateLevel(snake) {
+    let requirementScore = 5;
+    if ((snake.score >= 1) && snake.score % requirementScore == 0) {
+        snake.level += 1;
+    }
+}
+
 function drawLevel(ctx, snake) {
-    console.log(ctx);
     ctx.fillText(`Level - ${snake.level}`, 440, 40);
+}
+
+function checkLives(ctx, snake) {
+    if (snake.lives <= 0) {
+        gameOver(ctx);
+    }
 }
 
 // Soal no 6: Pada fungsi drawScore, tambahkan score3Board:
@@ -92,7 +108,7 @@ function drawScore(snake) {
     ctx.fillText(`${snake.score}`, 40, 40);
 
     drawLives(ctx, snake);
-    drawLevel(ctx, snake)
+    drawLevel(ctx, snake);
 }
 
 function draw() {
@@ -101,6 +117,12 @@ function draw() {
         let ctx = snakeCanvas.getContext("2d");
 
         ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+        checkLives(ctx, snake1);
+        if (snake1.lives <= 0){
+            drawScore(snake1);
+            return;
+        }
 
         drawCell(ctx, snake1.head.x, snake1.head.y, snake1.color);
         for (let i = 1; i < snake1.body.length; i++) {
@@ -141,6 +163,7 @@ function eat(snake, apples) {
         if (snake.head.x == apple.position.x && snake.head.y == apple.position.y) {
             apple.position = initPosition();
             snake.score++;
+            updateLevel(snake)
             snake.body.push({ x: snake.head.x, y: snake.head.y });
         }
     }
@@ -170,6 +193,13 @@ function moveUp(snake) {
     eat(snake, apples);
 }
 
+function removeBodySnake(snake){
+    snake.lives--;
+    while (snake.body.length) {
+        snake.body.pop();
+    }
+}
+
 function checkCollision(snakes) {
     let isCollide = false;
     //this
@@ -183,12 +213,9 @@ function checkCollision(snakes) {
         }
     }
     if (isCollide) {
+        removeBodySnake(snake1);
         var audio = new Audio('Asset/game-over.mp3');
         audio.play();
-
-        alert("Game over");
-        snake1 = initSnake("purple");
-
     }
     return isCollide;
 }
