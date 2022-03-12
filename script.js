@@ -37,62 +37,126 @@ function initSnake(color) {
         ...initHeadAndBody(),
         direction: initDirection(),
         score: 0,
+        lives: 3,
+        level: 1
     }
 }
 let snake1 = initSnake("purple");
 
 // Soal no 4: make apples array
 let apples = [{
-        color: "red",
-        position: initPosition(),
-    },
-    {
-        color: "green",
-        position: initPosition(),
-    }
-]
+            color: "red",
+            position: initPosition(),
+        },
+        {
+            color: "green",
+            position: initPosition(),
+        }
+    ]
+    //this
+let live = {
+    color: "blue",
+    position: initPosition(),
+}
 
 function drawCell(ctx, x, y, color) {
     ctx.fillStyle = color;
     ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 }
 
+function gameOver(ctx) {
+    ctx.font = "bold 30px Poppins";
+    ctx.fillStyle = "Black";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("Yah kalah, Semangat!! ", CANVAS_SIZE / 2, CANVAS_SIZE / 2);
+}
+
+function drawLives(ctx, snake) {
+    ctx.fillText(`${snake.lives}`, 40, 5);
+    let img = document.getElementById("lives");
+    ctx.drawImage(img, 0, 0, 30, 30);
+}
+
+function updateLevel(snake) {
+    let requirementScore = 5;
+    if ((snake.score >= 1) && snake.score % requirementScore == 0) {
+        snake.level += 1;
+    }
+}
+
+function drawLevel(ctx, snake) {
+    ctx.fillText(`Level - ${snake.level}`, 440, 40);
+}
+
+function checkLives(ctx, snake) {
+    if (snake.lives <= 0) {
+        gameOver(ctx);
+    }
+}
+
 // Soal no 6: Pada fungsi drawScore, tambahkan score3Board:
 function drawScore(snake) {
-    let scoreCanvas;
+    let canvas;
     if (snake.color == snake1.color) {
-        scoreCanvas = document.getElementById("score1Board");
+        canvas = document.getElementById("score1Board");
     }
-    let scoreCtx = scoreCanvas.getContext("2d");
+    let ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-    scoreCtx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-    scoreCtx.font = "30px Arial";
-    scoreCtx.fillStyle = snake.color
-    scoreCtx.fillText(snake.score, 10, scoreCanvas.scrollHeight / 2);
+    ctx.font = "bold 30px Poppins";
+    ctx.fillStyle = "Black";
+    ctx.textBaseline = "top";
+
+    let img = document.getElementById("apple");
+    ctx.drawImage(img, 0, 35, 30, 30);
+    ctx.fillText(`${snake.score}`, 40, 40);
+
+    drawLives(ctx, snake);
+    drawLevel(ctx, snake);
 }
 
 function draw() {
     setInterval(function() {
-        let snakeCanvas = document.getElementById("snakeBoard");
-        let ctx = snakeCanvas.getContext("2d");
+            let snakeCanvas = document.getElementById("snakeBoard");
+            let ctx = snakeCanvas.getContext("2d");
 
-        ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+            ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-        drawCell(ctx, snake1.head.x, snake1.head.y, snake1.color);
-        for (let i = 1; i < snake1.body.length; i++) {
-            drawCell(ctx, snake1.body[i].x, snake1.body[i].y, snake1.color);
-        }
-        for (let i = 0; i < apples.length; i++) {
-            let apple = apples[i];
+            checkLives(ctx, snake1);
+            if (snake1.lives <= 0) {
+                drawScore(snake1);
+                return;
+            }
+            var imgSnake = document.getElementById("snake");
 
-            // Soal no 3: DrawImage apple dan gunakan image id:
-            var img = document.getElementById("apple");
-            ctx.drawImage(img, apple.position.x * CELL_SIZE, apple.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-        }
+            ctx.drawImage(imgSnake, snake1.head.x * CELL_SIZE, snake1.head.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 
-        drawScore(snake1);
+            for (let i = 1; i < snake1.body.length; i++) {
+                ctx.drawImage(imgSnake, snake1.body[i].x * CELL_SIZE, snake1.body[i].y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            }
 
-    }, REDRAW_INTERVAL);
+
+            for (let i = 0; i < apples.length; i++) {
+                let apple = apples[i];
+
+                // Soal no 3: DrawImage apple dan gunakan image id:
+                var img = document.getElementById("apple");
+                ctx.drawImage(img, apple.position.x * CELL_SIZE, apple.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+
+            }
+
+            //this
+            if (isPrime(snake1.score)) {
+
+                var img = document.getElementById("lives");
+                ctx.drawImage(img, live.position.x * CELL_SIZE, live.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            }
+
+            drawScore(snake1);
+
+        },
+        REDRAW_INTERVAL);
 }
 
 function teleport(snake) {
@@ -117,8 +181,17 @@ function eat(snake, apples) {
         if (snake.head.x == apple.position.x && snake.head.y == apple.position.y) {
             apple.position = initPosition();
             snake.score++;
+            updateLevel(snake)
             snake.body.push({ x: snake.head.x, y: snake.head.y });
         }
+    }
+}
+
+//this
+function eatlive(snake, live) {
+    if (snake.head.x == live.position.x && snake.head.y == live.position.y) {
+        live.position = initPosition();
+        snake.lives++;
     }
 }
 
@@ -126,24 +199,35 @@ function moveLeft(snake) {
     snake.head.x--;
     teleport(snake);
     eat(snake, apples);
+    eatlive(snake, live);
 }
 
 function moveRight(snake) {
     snake.head.x++;
     teleport(snake);
     eat(snake, apples);
+    eatlive(snake, live);
 }
 
 function moveDown(snake) {
     snake.head.y++;
     teleport(snake);
     eat(snake, apples);
+    eatlive(snake, live);
 }
 
 function moveUp(snake) {
     snake.head.y--;
     teleport(snake);
     eat(snake, apples);
+    eatlive(snake, live);
+}
+
+function removeBodySnake(snake) {
+    snake.lives--;
+    while (snake.body.length) {
+        snake.body.pop();
+    }
 }
 
 function checkCollision(snakes) {
@@ -159,15 +243,23 @@ function checkCollision(snakes) {
         }
     }
     if (isCollide) {
+        removeBodySnake(snake1);
         var audio = new Audio('Asset/game-over.mp3');
         audio.play();
-
-        alert("Game over");
-        snake1 = initSnake("purple");
-
     }
     return isCollide;
 }
+
+
+function isPrime(n) {
+    if (isNaN(n) || !isFinite(n) || n % 1 || n < 2) return false;
+    var m = Math.sqrt(n); //returns the square root of the passed value
+    for (var i = 2; i <= m; i++)
+        if (n % i == 0) return false;
+    return true;
+
+}
+
 
 function move(snake) {
     switch (snake.direction) {
