@@ -45,14 +45,19 @@ let snake1 = initSnake("purple");
 
 // Soal no 4: make apples array
 let apples = [{
-    color: "red",
-    position: initPosition(),
-},
-{
-    color: "green",
+            color: "red",
+            position: initPosition(),
+        },
+        {
+            color: "green",
+            position: initPosition(),
+        }
+    ]
+    //this
+let live = {
+    color: "blue",
     position: initPosition(),
 }
-]
 
 function drawCell(ctx, x, y, color) {
     ctx.fillStyle = color;
@@ -112,33 +117,46 @@ function drawScore(snake) {
 }
 
 function draw() {
-    setInterval(function () {
-        let snakeCanvas = document.getElementById("snakeBoard");
-        let ctx = snakeCanvas.getContext("2d");
+    setInterval(function() {
+            let snakeCanvas = document.getElementById("snakeBoard");
+            let ctx = snakeCanvas.getContext("2d");
 
-        ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+            ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-        checkLives(ctx, snake1);
-        if (snake1.lives <= 0){
+            checkLives(ctx, snake1);
+            if (snake1.lives <= 0) {
+                drawScore(snake1);
+                return;
+            }
+            var imgSnake = document.getElementById("snake");
+
+            ctx.drawImage(imgSnake, snake1.head.x * CELL_SIZE, snake1.head.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+
+            for (let i = 1; i < snake1.body.length; i++) {
+                ctx.drawImage(imgSnake, snake1.body[i].x * CELL_SIZE, snake1.body[i].y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            }
+
+
+            for (let i = 0; i < apples.length; i++) {
+                let apple = apples[i];
+
+                // Soal no 3: DrawImage apple dan gunakan image id:
+                var img = document.getElementById("apple");
+                ctx.drawImage(img, apple.position.x * CELL_SIZE, apple.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+
+            }
+
+            //this
+            if (isPrime(snake1.score)) {
+
+                var img = document.getElementById("lives");
+                ctx.drawImage(img, live.position.x * CELL_SIZE, live.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            }
+
             drawScore(snake1);
-            return;
-        }
 
-        drawCell(ctx, snake1.head.x, snake1.head.y, snake1.color);
-        for (let i = 1; i < snake1.body.length; i++) {
-            drawCell(ctx, snake1.body[i].x, snake1.body[i].y, snake1.color);
-        }
-        for (let i = 0; i < apples.length; i++) {
-            let apple = apples[i];
-
-            // Soal no 3: DrawImage apple dan gunakan image id:
-            var img = document.getElementById("apple");
-            ctx.drawImage(img, apple.position.x * CELL_SIZE, apple.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-        }
-
-        drawScore(snake1);
-
-    }, REDRAW_INTERVAL);
+        },
+        REDRAW_INTERVAL);
 }
 
 function teleport(snake) {
@@ -169,31 +187,43 @@ function eat(snake, apples) {
     }
 }
 
+//this
+function eatlive(snake, live) {
+    if (snake.head.x == live.position.x && snake.head.y == live.position.y) {
+        live.position = initPosition();
+        snake.lives++;
+    }
+}
+
 function moveLeft(snake) {
     snake.head.x--;
     teleport(snake);
     eat(snake, apples);
+    eatlive(snake, live);
 }
 
 function moveRight(snake) {
     snake.head.x++;
     teleport(snake);
     eat(snake, apples);
+    eatlive(snake, live);
 }
 
 function moveDown(snake) {
     snake.head.y++;
     teleport(snake);
     eat(snake, apples);
+    eatlive(snake, live);
 }
 
 function moveUp(snake) {
     snake.head.y--;
     teleport(snake);
     eat(snake, apples);
+    eatlive(snake, live);
 }
 
-function removeBodySnake(snake){
+function removeBodySnake(snake) {
     snake.lives--;
     while (snake.body.length) {
         snake.body.pop();
@@ -220,6 +250,17 @@ function checkCollision(snakes) {
     return isCollide;
 }
 
+
+function isPrime(n) {
+    if (isNaN(n) || !isFinite(n) || n % 1 || n < 2) return false;
+    var m = Math.sqrt(n); //returns the square root of the passed value
+    for (var i = 2; i <= m; i++)
+        if (n % i == 0) return false;
+    return true;
+
+}
+
+
 function move(snake) {
     switch (snake.direction) {
         case DIRECTION.LEFT:
@@ -237,7 +278,7 @@ function move(snake) {
     }
     moveBody(snake);
     if (!checkCollision([snake1])) {
-        setTimeout(function () {
+        setTimeout(function() {
             move(snake);
         }, MOVE_INTERVAL);
     } else {
@@ -263,7 +304,7 @@ function turn(snake, direction) {
     }
 }
 
-document.addEventListener("keydown", function (event) {
+document.addEventListener("keydown", function(event) {
     if (event.key === "ArrowLeft") {
         turn(snake1, DIRECTION.LEFT);
     } else if (event.key === "ArrowRight") {
