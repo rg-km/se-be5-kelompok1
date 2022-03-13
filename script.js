@@ -82,6 +82,8 @@ function updateLevel(snake) {
     let requirementScore = 5;
     if ((snake.score >= 1) && snake.score % requirementScore == 0) {
         snake.level += 1;
+        var audio = new Audio('Asset/game-new-level.mp3');
+        audio.play();
     }
 }
 
@@ -191,6 +193,9 @@ function eat(snake, apples) {
 function eatlive(snake, live) {
     if (snake.head.x == live.position.x && snake.head.y == live.position.y) {
         live.position = initPosition();
+        if(snake.lives >= 3){
+            return;
+        }
         snake.lives++;
     }
 }
