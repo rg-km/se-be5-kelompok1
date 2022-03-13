@@ -38,7 +38,8 @@ function initSnake(color) {
         direction: initDirection(),
         score: 0,
         lives: 3,
-        level: 1
+        level: 1,
+        iscomplete: false
     }
 }
 let snake1 = initSnake("purple");
@@ -87,11 +88,34 @@ function drawLives(ctx, snake) {
     let img = document.getElementById("lives");
     ctx.drawImage(img, 0, 0, 30, 30);
 }
+function removeNotifLevel(ctx){
+    setTimeout(function () {
+        ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    }, 4000)
+}
+
+function drawNotifLevel(snake){
+    setTimeout(function(){
+        let canvas = document.getElementById("notif");
+        let ctx = canvas.getContext("2d");
+        ctx.font = "bold 30px Poppins";
+        ctx.fillStyle = "Black";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        if(snake.level > 5){
+            ctx.fillText("Hebat!!", CANVAS_SIZE / 2, CANVAS_SIZE / 2);
+            return;
+        };
+        ctx.fillText(`Selamat!! Level ${snake.level - 1} sudah selesai`, CANVAS_SIZE / 2, CANVAS_SIZE / 2);
+        removeNotifLevel(ctx);
+    },1000);
+}
 
 function updateLevel(snake) {
     let requirementScore = 5;
     if ((snake.score >= 1) && snake.score % requirementScore == 0) {
         snake.level += 1;
+        drawNotifLevel(snake)
         playSound(sounds.nextLevel);
     }
 }
@@ -133,10 +157,12 @@ function draw() {
             let ctx = snakeCanvas.getContext("2d");
 
             ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-
             checkLives(ctx, snake1);
             if (snake1.lives <= 0) {
                 drawScore(snake1);
+                return;
+            }
+            if (snake1.iscomplete) {
                 return;
             }
             var imgSnake = document.getElementById("snake");
@@ -232,7 +258,8 @@ function draw() {
                     break;
 
                 case 6:
-                    alert("Game finished")
+                    drawNotifLevel(snake1);
+                    snake1.iscomplete = true;
             }
             drawScore(snake1);
 
