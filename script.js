@@ -59,6 +59,16 @@ let live = {
     position: initPosition(),
 }
 
+let sounds = {
+    nextLevel: "Asset/game-new-level.mp3",
+    gameOver: "Asset/game-over.mp3"
+}
+
+function playSound(sound){
+    let audio = new Audio(sound);
+    audio.play();
+}
+
 function drawCell(ctx, x, y, color) {
     ctx.fillStyle = color;
     ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
@@ -82,8 +92,7 @@ function updateLevel(snake) {
     let requirementScore = 5;
     if ((snake.score >= 1) && snake.score % requirementScore == 0) {
         snake.level += 1;
-        var audio = new Audio('Asset/game-new-level.mp3');
-        audio.play();
+        playSound(sounds.nextLevel);
     }
 }
 
@@ -386,8 +395,7 @@ function checkCollision(snakes) {
     }
     if (isCollide) {
         removeBodySnake(snake1);
-        var audio = new Audio('Asset/game-over.mp3');
-        audio.play();
+        playSound(sounds.gameOver);
     }
     return isCollide;
 }
