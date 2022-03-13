@@ -134,7 +134,7 @@ function draw() {
 
             ctx.drawImage(imgSnake, snake1.head.x * CELL_SIZE, snake1.head.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 
-            for (let i = 1; i < snake1.body.length; i++) {
+            for (let i = 0; i < snake1.body.length; i++) {
                 ctx.drawImage(imgSnake, snake1.body[i].x * CELL_SIZE, snake1.body[i].y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
             }
 
@@ -155,6 +155,76 @@ function draw() {
                 ctx.drawImage(img, live.position.x * CELL_SIZE, live.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
             }
 
+
+            switch (snake1.level) {
+
+                case 2:
+                    for (let j = 7; j < 22; j++) {
+                        var x = 10;
+                        drawCell(ctx, 14, j, "red");
+                    }
+
+                    break;
+
+
+                case 3:
+                    for (let j = 4; j < 18; j++) {
+                        var x = 10;
+                        drawCell(ctx, j, 6, "red");
+                    }
+
+                    for (let j = 12; j < 26; j++) {
+                        var x = 10;
+                        drawCell(ctx, j, 20, "red");
+                    }
+                    break;
+                case 4:
+                    for (let j = 10; j < 20; j++) {
+                        drawCell(ctx, j, 6, "red");
+                    }
+
+                    for (let j = 4; j < 11; j++) {
+                        drawCell(ctx, j, 15, "red");
+                    }
+
+                    for (let j = 19; j < 26; j++) {
+                        drawCell(ctx, j, 15, "red");
+                    }
+
+
+
+                    for (let j = 10; j < 20; j++) {
+                        drawCell(ctx, j, 24, "red");
+                    }
+
+
+                    break;
+
+                case 5:
+                    for (let j = 10; j < 20; j++) {
+                        drawCell(ctx, j, 6, "red");
+                    }
+
+                    for (let j = 0; j < 11; j++) {
+                        drawCell(ctx, j, 15, "red");
+                    }
+
+                    for (let j = 19; j < 40; j++) {
+                        drawCell(ctx, j, 15, "red");
+                    }
+
+
+
+                    for (let j = 10; j < 20; j++) {
+                        drawCell(ctx, j, 24, "red");
+                    }
+
+
+                    break;
+
+                case 6:
+                    alert("Game finished")
+            }
             drawScore(snake1);
 
         },
@@ -244,7 +314,74 @@ function checkCollision(snakes) {
                 if (snakes[i].head.x == snakes[j].body[k].x && snakes[i].head.y == snakes[j].body[k].y) {
                     isCollide = true;
                 }
+                for (let j = 7; j < 22; j++) {
+                    if (snakes[i].head.x == 14 && snakes[i].head.y == j && snakes[i].level == 2) {
+                        isCollide = true;
+                    }
+                }
+
+                for (let l = 4; l < 18; l++) {
+                    if (snakes[i].head.x == l && snakes[i].head.y == 6 && snakes[i].level == 3) {
+                        isCollide = true;
+                    }
+                }
+                for (let j = 12; j < 26; j++) {
+                    if (snakes[i].head.x == j && snakes[i].head.y == 20 && snakes[i].level == 3) {
+                        isCollide = true;
+                    }
+                }
+                for (let j = 10; j < 20; j++) {
+                    if (snakes[i].head.x == j && snakes[i].head.y == 6 && snakes[i].level == 4) {
+                        isCollide = true;
+                    }
+                }
+
+                for (let j = 4; j < 11; j++) {
+                    if (snakes[i].head.x == j && snakes[i].head.y == 15 && snakes[i].level == 4) {
+                        isCollide = true;
+                    }
+                }
+
+                for (let j = 19; j < 26; j++) {
+                    if (snakes[i].head.x == j && snakes[i].head.y == 15 && snakes[i].level == 4) {
+                        isCollide = true;
+                    }
+                }
+
+                for (let j = 10; j < 20; j++) {
+                    if (snakes[i].head.x == j && snakes[i].head.y == 24 && snakes[i].level == 4) {
+                        isCollide = true;
+                    }
+                }
+                for (let j = 10; j < 20; j++) {
+                    if (snakes[i].head.x == j && snakes[i].head.y == 6 && snakes[i].level == 5) {
+                        isCollide = true;
+                    }
+                }
+
+                for (let j = 0; j < 11; j++) {
+                    if (snakes[i].head.x == j && snakes[i].head.y == 15 && snakes[i].level == 5) {
+                        isCollide = true;
+                    }
+                }
+
+                for (let j = 19; j < 40; j++) {
+                    if (snakes[i].head.x == j && snakes[i].head.y == 15 && snakes[i].level == 5) {
+                        isCollide = true;
+                    }
+                }
+
+                for (let j = 10; j < 20; j++) {
+                    if (snakes[i].head.x == j && snakes[i].head.y == 24 && snakes[i].level == 5) {
+                        isCollide = true;
+                    }
+                }
+
+
+
+
             }
+
         }
     }
     if (isCollide) {
@@ -321,6 +458,12 @@ document.addEventListener("keydown", function(event) {
     }
 
 })
+
+document.addEventListener(snake1.level == 2, function() {
+    var audio = new Audio('Asset/game-over.mp3');
+    audio.play();
+
+}, { once: true });
 
 function initGame() {
     move(snake1);
