@@ -16,7 +16,7 @@
 
         h1 {
             margin: 0;
-            padding-bottom: 30px;
+            padding-bottom: 20px;
             text-align: center;
             font-size: 64px;
             font-weight: bold;
@@ -35,9 +35,11 @@
             bottom: 5px;
         }
 
-        #snakeBoard {
+        #snakeBoard, #notif {
+            position: absolute;
             border: 1px solid #000000;
-            display: block;
+            left: 0;
+            right:0;
             margin: 0 auto;
         }
     </style>
@@ -51,6 +53,8 @@
     <img id="snake" width="20" height="20" src="Asset/snake.jpg" alt="Snake">
     <canvas id="score1Board" width="600" height="70"></canvas>
     <canvas id="snakeBoard" width="600" height="600"></canvas>
+    <canvas id="notif" width="600" height="600"></canvas>
+
 </body>
 
 </html>
