@@ -65,7 +65,7 @@ let sounds = {
     gameOver: "Asset/game-over.mp3"
 }
 
-function playSound(sound){
+function playSound(sound) {
     let audio = new Audio(sound);
     audio.play();
 }
@@ -88,27 +88,28 @@ function drawLives(ctx, snake) {
     let img = document.getElementById("lives");
     ctx.drawImage(img, 0, 0, 30, 30);
 }
-function removeNotifLevel(ctx){
-    setTimeout(function () {
+
+function removeNotifLevel(ctx) {
+    setTimeout(function() {
         ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
     }, 4000)
 }
 
-function drawNotifLevel(snake){
-    setTimeout(function(){
+function drawNotifLevel(snake) {
+    setTimeout(function() {
         let canvas = document.getElementById("notif");
         let ctx = canvas.getContext("2d");
         ctx.font = "bold 30px Poppins";
         ctx.fillStyle = "Black";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        if(snake.level > 5){
+        if (snake.level > 5) {
             ctx.fillText("Hebat!!", CANVAS_SIZE / 2, CANVAS_SIZE / 2);
             return;
         };
         ctx.fillText(`Selamat!! Level ${snake.level - 1} sudah selesai`, CANVAS_SIZE / 2, CANVAS_SIZE / 2);
         removeNotifLevel(ctx);
-    },1000);
+    }, 1000);
 }
 
 function updateLevel(snake) {
@@ -299,7 +300,7 @@ function eat(snake, apples) {
 function eatlive(snake, live) {
     if (snake.head.x == live.position.x && snake.head.y == live.position.y) {
         live.position = initPosition();
-        if(snake.lives >= 3){
+        if (snake.lives >= 3) {
             return;
         }
         snake.lives++;
@@ -495,7 +496,7 @@ document.addEventListener("keydown", function(event) {
 })
 
 document.addEventListener(snake1.level == 2, function() {
-    var audio = new Audio('Asset/game-over.mp3');
+    var audio = new Audio('Asset/game-new-level.mp3');
     audio.play();
 
 }, { once: true });
