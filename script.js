@@ -61,8 +61,9 @@ let live = {
 }
 
 let sounds = {
-    nextLevel: "Asset/game-new-level.mp3",
-    gameOver: "Asset/game-over.mp3"
+    nextLevel: "Asset/next-level.mp3",
+    gameOver: "Asset/game-over.mp3",
+    gameComplete: "Asset/game-complete.mp3"
 }
 
 function playSound(sound) {
@@ -187,6 +188,7 @@ function drawNotifLevel(snake) {
             ctx.font = "bold 30px Poppins";
             ctx.fillStyle = "Black";
             ctx.fillText("Kamu berhasil menamatkan game ini", CANVAS_SIZE / 2, (CANVAS_SIZE / 2));
+            playSound(sounds.gameComplete);
             drawBtnPlayAgain(ctx);
             return;
         };
@@ -198,7 +200,10 @@ function drawNotifLevel(snake) {
 function updateLevel(snake) {
     let requirementScore = 5;
     if ((snake.score >= 1) && snake.score % requirementScore == 0) {
-        snake.level += 1;
+        snake.level++;
+        if (snake.level > 5){
+            return;
+        }
         drawNotifLevel(snake)
         playSound(sounds.nextLevel);
     }
@@ -246,8 +251,9 @@ function draw() {
 
             ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
             checkLives(ctx, snake1);
-            if (snake1.lives <= 0) {
+            if (snake1.lives == 0) {
                 drawScore(snake1);
+                // playSound(sounds.gameOver);
                 return;
             }
             if (snake1.iscomplete) {
@@ -508,7 +514,6 @@ function checkCollision(snakes) {
     }
     if (isCollide) {
         removeBodySnake(snake1);
-        playSound(sounds.gameOver);
     }
     return isCollide;
 }
@@ -579,12 +584,6 @@ document.addEventListener("keydown", function(event) {
     }
 
 })
-
-document.addEventListener(snake1.level == 2, function() {
-    var audio = new Audio('Asset/game-new-level.mp3');
-    audio.play();
-
-}, { once: true });
 
 function initGame() {
     move(snake1);
