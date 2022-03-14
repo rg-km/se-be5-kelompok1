@@ -75,6 +75,27 @@ function drawCell(ctx, x, y, color) {
     ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 }
 
+function drawSpeed(){
+    let canvas = document.getElementById("speed");
+    let ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    ctx.font = "semibold italic 20px Poppins";
+    ctx.fillStyle = "Black";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(`Speed ${MOVE_INTERVAL} ms`, 40, 40);
+}
+
+function removeBodySnake(snake, reset = false) {
+    if (reset) {
+        snake.lives++;
+    }
+    snake.lives--;
+    while (snake.body.length) {
+        snake.body.pop();
+    }
+}
+
 function gameOver(ctx) {
     ctx.font = "bold 30px Poppins";
     ctx.fillStyle = "Black";
@@ -89,6 +110,62 @@ function drawLives(ctx, snake) {
     ctx.drawImage(img, 0, 0, 30, 30);
 }
 
+function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+    if (typeof stroke == "undefined") {
+        stroke = true;
+    }
+    if (typeof radius === "undefined") {
+        radius = 5;
+    }
+    ctx.beginPath();
+    // ctx.arc(150, 400, 13, Math.PI / 7, -Math.PI / 7, false);
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + width - radius, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    ctx.lineTo(x + width, y + height - radius);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    ctx.lineTo(x + radius, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
+    if (stroke) {
+        ctx.stroke();
+    }
+    if (fill) {
+        ctx.fill();
+    }
+}
+
+function drawBtnPlayAgain(ctx) {
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "#55B1AC";
+    ctx.fillStyle = "#55B1AC";
+    roundRect(ctx, 150, 400, 271, 50, 10, true);
+    ctx.font = "28px Poppins";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "#FFF";
+    var rectHeight = 50;
+    var rectX = 310;
+    var rectY = 400;
+    ctx.fillText("Main lagi", rectX, rectY + (rectHeight / 2));
+    var imgArrow = document.getElementById("arrow");
+    ctx.drawImage(imgArrow, 180, 395);
+
+    // reset semua attr ke normal
+    addEventListener('click', function () {
+        console.log(snake1);
+        snake1.level = 1;
+        snake1.score = 0;
+        snake1.lives = 3;
+        MOVE_INTERVAL = 120;
+        snake1.iscomplete = false;
+        removeBodySnake(snake1, reset = true);
+        ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    }, false)
+}
+
 function removeNotifLevel(ctx) {
     setTimeout(function() {
         ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
@@ -96,7 +173,7 @@ function removeNotifLevel(ctx) {
 }
 
 function drawNotifLevel(snake) {
-    setTimeout(function() {
+    setTimeout(function () {
         let canvas = document.getElementById("notif");
         let ctx = canvas.getContext("2d");
         ctx.font = "bold 30px Poppins";
@@ -104,7 +181,13 @@ function drawNotifLevel(snake) {
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         if (snake.level > 5) {
-            ctx.fillText("Hebat!!", CANVAS_SIZE / 2, CANVAS_SIZE / 2);
+            ctx.font = "italic bold 64px Poppins";
+            ctx.fillStyle = "#70B42C";
+            ctx.fillText("Hebat!!", CANVAS_SIZE / 2, CANVAS_SIZE / 3);
+            ctx.font = "bold 30px Poppins";
+            ctx.fillStyle = "Black";
+            ctx.fillText("Kamu berhasil menamatkan game ini", CANVAS_SIZE / 2, (CANVAS_SIZE / 2));
+            drawBtnPlayAgain(ctx);
             return;
         };
         ctx.fillText(`Selamat!! Level ${snake.level - 1} sudah selesai`, CANVAS_SIZE / 2, CANVAS_SIZE / 2);
@@ -122,7 +205,11 @@ function updateLevel(snake) {
 }
 
 function drawLevel(ctx, snake) {
-    ctx.fillText(`Level - ${snake.level}`, 440, 40);
+    if (snake.iscomplete) {
+        ctx.fillText("Level - 5", 470, 40);
+        return;
+    }
+    ctx.fillText(`Level - ${snake.level}`, 470, 40);
 }
 
 function checkLives(ctx, snake) {
@@ -164,6 +251,7 @@ function draw() {
                 return;
             }
             if (snake1.iscomplete) {
+                drawScore(snake1);
                 return;
             }
             var imgSnake = document.getElementById("snake");
@@ -267,7 +355,7 @@ function draw() {
                     snake1.iscomplete = true;
             }
             drawScore(snake1);
-
+            drawSpeed();
         },
         REDRAW_INTERVAL);
 }
@@ -337,13 +425,6 @@ function moveUp(snake) {
     teleport(snake);
     eat(snake, apples);
     eatlive(snake, live);
-}
-
-function removeBodySnake(snake) {
-    snake.lives--;
-    while (snake.body.length) {
-        snake.body.pop();
-    }
 }
 
 function checkCollision(snakes) {
