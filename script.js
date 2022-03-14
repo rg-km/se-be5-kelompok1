@@ -9,7 +9,7 @@ const DIRECTION = {
     UP: 2,
     DOWN: 3,
 }
-const MOVE_INTERVAL = 120;
+MOVE_INTERVAL = 120;
 
 function initPosition() {
     return {
@@ -195,6 +195,7 @@ function draw() {
             switch (snake1.level) {
 
                 case 2:
+                    MOVE_INTERVAL = 110;
                     for (let j = 7; j < 22; j++) {
                         var x = 10;
                         drawCell(ctx, 14, j, "red");
@@ -204,6 +205,7 @@ function draw() {
 
 
                 case 3:
+                    MOVE_INTERVAL = 100;
                     for (let j = 4; j < 18; j++) {
                         var x = 10;
                         drawCell(ctx, j, 6, "red");
@@ -215,6 +217,7 @@ function draw() {
                     }
                     break;
                 case 4:
+                    MOVE_INTERVAL = 90;
                     for (let j = 10; j < 20; j++) {
                         drawCell(ctx, j, 6, "red");
                     }
@@ -237,6 +240,7 @@ function draw() {
                     break;
 
                 case 5:
+                    MOVE_INTERVAL = 80;
                     for (let j = 10; j < 20; j++) {
                         drawCell(ctx, j, 6, "red");
                     }
